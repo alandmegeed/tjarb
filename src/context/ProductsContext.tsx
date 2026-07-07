@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { Product } from '../data/products';
 import { defaultProducts } from '../data/products';
+import { loadPersistedState, savePersistedState } from '../lib/persistedState';
 
 interface ProductsContextType {
   products: Product[];
@@ -21,21 +22,27 @@ const PRODUCTS_KEY = 'coffee-shop-products';
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
 export function ProductsProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem(PRODUCTS_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return defaultProducts;
-      }
-    }
-    return defaultProducts;
-  });
+  const [products, setProducts] = useState<Product[]>(defaultProducts);
 
-  // حفظ المنتجات في localStorage عند التغيير
   useEffect(() => {
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    let cancelled = false;
+
+    const load = async () => {
+      const saved = await loadPersistedState<Product[]>(PRODUCTS_KEY, defaultProducts);
+      if (!cancelled) {
+        setProducts(saved);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    savePersistedState(PRODUCTS_KEY, products);
   }, [products]);
 
   const getNextId = useCallback(() => {

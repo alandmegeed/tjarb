@@ -4,6 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { loadPersistedState, savePersistedState } from '../lib/persistedState';
 
 export interface Category {
   id: string;
@@ -30,20 +31,27 @@ interface CategoriesContextType {
 const CategoriesContext = createContext<CategoriesContextType | undefined>(undefined);
 
 export function CategoriesProvider({ children }: { children: React.ReactNode }) {
-  const [categories, setCategories] = useState<Category[]>(() => {
-    const saved = localStorage.getItem(CATEGORIES_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return defaultCategories;
-      }
-    }
-    return defaultCategories;
-  });
+  const [categories, setCategories] = useState<Category[]>(defaultCategories);
 
   useEffect(() => {
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    let cancelled = false;
+
+    const load = async () => {
+      const saved = await loadPersistedState<Category[]>(CATEGORIES_KEY, defaultCategories);
+      if (!cancelled) {
+        setCategories(saved);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    savePersistedState(CATEGORIES_KEY, categories);
   }, [categories]);
 
   const getNextCategoryId = useCallback(() => {

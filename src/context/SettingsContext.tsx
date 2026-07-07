@@ -14,6 +14,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { loadPersistedState, savePersistedState } from '../lib/persistedState';
 
 export interface SiteSettings {
   // اسم المحل
@@ -84,20 +85,27 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [settings, setSettings] = useState<SiteSettings>(() => {
-    const saved = localStorage.getItem(SETTINGS_KEY);
-    if (saved) {
-      try {
-        return { ...defaultSettings, ...JSON.parse(saved) };
-      } catch {
-        return defaultSettings;
-      }
-    }
-    return defaultSettings;
-  });
+  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
 
   useEffect(() => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    let cancelled = false;
+
+    const load = async () => {
+      const saved = await loadPersistedState<Partial<SiteSettings>>(SETTINGS_KEY, {});
+      if (!cancelled) {
+        setSettings({ ...defaultSettings, ...saved });
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    savePersistedState(SETTINGS_KEY, settings);
   }, [settings]);
 
   const updateSettings = (updates: Partial<SiteSettings>) => {
