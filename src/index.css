@@ -1,0 +1,44 @@
+/* الخطوط العربية */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+
+/**
+ * الأنماط العامة للتطبيق
+ * استيراد Tailwind CSS + أنماط مخصصة
+ */
+
+@import "tailwindcss";
+
+/* أنماط الجذر */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* شريط التمرير المخصص */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF8E7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D7CCC8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A1887F;
+}
+
+/* تحديد النص */
+::selection {
+  background: #D7CCC8;
+  color: #3E2723;
+}

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مقهى الأصالة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #FFF8E7; }
+    ::-webkit-scrollbar-thumb { background: #D7CCC8; border-radius: 4px; }
+
+    .header { position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
+    .logo { display: flex; align-items: center; gap: 10px; color: #FFECB3; font-size: 22px; font-weight: 800; }
+    .cart-btn { position: relative; display: flex; align-items: center; gap: 8px; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .cart-btn:hover { opacity: 0.9; transform: scale(1.05); }
+    .cart-count { position: absolute; top: -8px; right: -8px; background: #FF1744; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+
+    .hero { position: relative; height: 65vh; min-height: 400px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+    .hero-overlay { position: absolute; inset: 0; }
+    .hero-content { position: relative; z-index: 2; text-align: center; padding: 20px; max-width: 700px; animation: fadeInUp 1s ease; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    .hero-title { color: #FFECB3; font-size: 42px; font-weight: 800; margin-bottom: 15px; text-shadow: 2px 2px 10px rgba(0,0,0,0.4); }
+    .hero-desc { color: #D7CCC8; font-size: 18px; line-height: 1.8; margin-bottom: 30px; }
+    .hero-btn { display: inline-flex; align-items: center; gap: 10px; color: white; border: none; padding: 14px 35px; border-radius: 50px; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+    .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+    .section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+    .section-subtitle { text-align: center; font-size: 16px; margin-bottom: 35px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+    .filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 40px; }
+    .filter-btn { padding: 10px 24px; border-radius: 50px; border: 2px solid #D7CCC8; background: white; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: 'Cairo', sans-serif; }
+    .filter-btn:hover { background: #FFF3E0; border-color: #FFCC80; }
+    .filter-btn.active { color: #FFECB3; border-color: transparent; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .product-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s; border: 1px solid #F5F5F5; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+    .product-img-wrap { position: relative; height: 200px; overflow: hidden; }
+    .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+    .product-card:hover .product-img { transform: scale(1.1); }
+    .product-price-tag { position: absolute; bottom: 12px; left: 12px; color: white; padding: 5px 15px; border-radius: 20px; font-weight: 700; font-size: 15px; }
+    .product-info { padding: 18px; }
+    .product-name { font-size: 17px; font-weight: 700; margin-bottom: 5px; }
+    .product-desc { font-size: 13px; margin-bottom: 15px; line-height: 1.6; }
+    .product-actions { display: flex; gap: 8px; }
+    .btn-add { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; color: white; border: none; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: 'Cairo', sans-serif; }
+    .btn-note { display: flex; align-items: center; justify-content: center; width: 42px; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; font-size: 16px; }
+
+    .cart-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .cart-overlay.open { opacity: 1; visibility: visible; }
+    .cart-sidebar { position: fixed; top: 0; right: 0; z-index: 201; width: 100%; max-width: 420px; height: 100%; box-shadow: -10px 0 40px rgba(0,0,0,0.2); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+    .cart-sidebar.open { transform: translateX(0); }
+    .cart-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; color: #FFECB3; }
+    .cart-close { background: none; border: none; color: #FFECB3; font-size: 24px; cursor: pointer; padding: 5px; }
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+    .cart-empty { text-align: center; padding: 60px 20px; }
+    .cart-item { background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    .cart-item-top { display: flex; align-items: start; gap: 12px; margin-bottom: 10px; }
+    .cart-item-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-weight: 700; font-size: 14px; }
+    .cart-item-price { font-weight: 700; font-size: 13px; margin-top: 3px; }
+    .cart-item-remove { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; }
+    .cart-item-controls { display: flex; align-items: center; justify-content: space-between; }
+    .qty-controls { display: flex; align-items: center; gap: 8px; }
+    .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .qty-val { font-weight: 700; width: 24px; text-align: center; }
+    .cart-item-total { font-weight: 700; }
+    .cart-item-note { margin-top: 10px; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+    .cart-item-note-input { width: 100%; padding: 6px 10px; border: 1px solid #FFE0B2; border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 12px; margin-top: 5px; }
+    .cart-footer { padding: 20px; border-top: 1px solid #F5F5F5; }
+    .cart-footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cart-clear { font-size: 13px; cursor: pointer; background: none; border: none; font-family: 'Cairo', sans-serif; }
+    .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cart-total-label { font-size: 16px; font-weight: 700; }
+    .cart-total-val { font-size: 24px; font-weight: 800; }
+    .btn-checkout { width: 100%; padding: 14px; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-checkout:hover { transform: translateY(-2px); }
+
+    .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-box { border-radius: 20px; padding: 25px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.9); transition: transform 0.3s; }
+    .modal-overlay.open .modal-box { transform: scale(1); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    .modal-header h3 { font-size: 17px; display: flex; align-items: center; gap: 8px; }
+    .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; }
+    .modal-product-name { font-weight: 600; margin-bottom: 12px; font-size: 14px; }
+    .modal-textarea { width: 100%; height: 90px; padding: 12px; border: 2px solid #FFE0B2; border-radius: 12px; font-family: 'Cairo', sans-serif; font-size: 14px; resize: none; outline: none; transition: border-color 0.3s; }
+    .modal-textarea:focus { border-color: #D84315; }
+    .modal-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .suggestion-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: none; font-family: 'Cairo', sans-serif; transition: all 0.2s; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .modal-btn-primary { flex: 1; padding: 10px; color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif; }
+    .modal-btn-secondary { flex: 1; padding: 10px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; }
+
+    .footer { padding: 50px 20px 20px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+    .footer-col h3 { font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .footer-col p, .footer-col a { font-size: 14px; line-height: 2; text-decoration: none; display: block; }
+    .footer-bottom { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 13px; }
+
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 14px; z-index: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; gap: 10px; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+      .hero-title { font-size: 28px; }
+      .hero-desc { font-size: 15px; }
+      .section-title { font-size: 24px; }
+      .products-grid { grid-template-columns: 1fr; }
+      .cart-sidebar { max-width: 100%; }
+      .footer-inner { grid-template-columns: 1fr; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header" id="header"><div class="header-inner"><div class="logo"><span class="logo-icon" id="logoIcon">☕</span><span id="siteName">مقهى الأصالة</span></div><button class="cart-btn" id="cartBtn" onclick="openCart()"><span id="cartBtnText">🛒 السلة</span><span class="cart-count" id="cartCount" style="display:none">0</span></button></div></header>
+
+<section class="hero" id="hero"><div class="hero-bg" id="heroBg"></div><div class="hero-overlay" id="heroOverlay"></div><div class="hero-content"><h1 class="hero-title" id="welcomeTitle">مرحباً بك في مقهى الأصالة</h1><p class="hero-desc" id="welcomeText">استمتع بأفضل العصائر الطازجة، الأراكيل الفاخرة، والمشروبات الساخنة في أجواء مريحة وفاخرة</p><a href="#menu" class="hero-btn" id="heroBtn">تصفح القائمة ↓</a></div></section>
+
+<section class="section" id="menu"><h2 class="section-title" id="menuTitle">قائمة المنتجات</h2><p class="section-subtitle" id="menuSubtitle">اختر من تشكيلتنا الواسعة من العصائر الطازجة والأراكيل الفاخرة والمشروبات الساخنة</p>
+<div class="filters" id="filters"></div>
+<div class="products-grid" id="productsGrid"></div>
+</section>
+
+<footer class="footer" id="footer"><div class="footer-inner"><div class="footer-col"><h3 id="footerLogo"><span id="footerIcon">☕</span> <span id="footerName">مقهى الأصالة</span></h3><p>وجهتك المثالية للاستمتاع بأفضل العصائر الطازجة، الأراكيل الفاخرة، والمشروبات الساخنة في أجواء مريحة وفاخرة.</p></div><div class="footer-col"><h4>📞 تواصل معنا</h4><div class="space-y-3"><div class="flex items-center gap-2">📍 <span id="footerAddress">شارع الجامعة، المدينة</span></div><div class="flex items-center gap-2">📱 <span id="footerPhone">+963 937 296 510</span></div><div class="flex items-center gap-2">🕐 <span id="footerHours">يومياً: 8 ص - 2 ص</span></div></div></div><div class="footer-col"><h4>🔗 روابط سريعة</h4><a href="#menu">📋 قائمة المنتجات</a><a href="#">ℹ️ عن المقهى</a><a href="#">📧 تواصل معنا</a></div></div><div class="footer-bottom" id="footerBottom">© 2025 مقهى الأصالة. جميع الحقوق محفوظة.</div></footer>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar"><div class="cart-header" id="cartHeader"><h2>🛒 سلة المشتريات</h2><button class="cart-close" onclick="closeCart()">✕</button></div><div class="cart-items" id="cartItems"><div class="cart-empty"><div style="font-size:60px; margin-bottom:15px;">🛒</div><p style="font-size:18px; font-weight:700; margin-bottom:5px;">السلة فارغة</p><p style="font-size:14px;">أضف بعض المنتجات لتظهر هنا</p></div></div><div class="cart-footer" id="cartFooter" style="display:none"><div class="cart-footer-top"><span id="footerCountLabel">عدد المنتجات: <span id="footerCount">0</span></span><button class="cart-clear" onclick="clearCart()">🗑️ تفريغ السلة</button></div><div class="cart-total-row"><span class="cart-total-label">المجموع:</span><span class="cart-total-val" id="cartTotal">0 ل.س</span></div><button class="btn-checkout" onclick="checkout()">📲 إتمام الشراء عبر واتساب</button></div></div>
+
+<div class="modal-overlay" id="noteModal"><div class="modal-box" id="modalBox"><div class="modal-header"><h3>📝 إضافة ملاحظة</h3><button class="modal-close" onclick="closeNoteModal()">✕</button></div><p class="modal-product-name" id="modalProductName"></p><textarea class="modal-textarea" id="noteTextarea" placeholder="اكتب ملاحظتك هنا..."></textarea><div class="modal-suggestions" id="modalSuggestions"></div><div class="modal-actions"><button class="modal-btn-primary" id="modalConfirmBtn" onclick="confirmAddWithNote()">إضافة إلى السلة</button><button class="modal-btn-secondary" onclick="closeNoteModal()">إلغاء</button></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== الإعدادات الافتراضية =====
+const defaultSettings = {
+  siteName: 'مقهى الأصالة',
+  siteSubtitle: 'عصائر طازجة | أراكيل | مشروبات',
+  welcomeTitle: 'مرحباً بك في مقهى الأصالة',
+  welcomeText: 'استمتع بأفضل العصائر الطازجة، الأراكيل الفاخرة، والمشروبات الساخنة في أجواء مريحة وفاخرة',
+  primaryColor: '#3E2723',
+  secondaryColor: '#5D4037',
+  accentColor: '#D84315',
+  bgColor: '#FFF8E7',
+  heroImage: 'https://images.pexels.com/photos/36484101/pexels-photo-36484101/free-photo-of-modern-cozy-indoor-cafe-with-stylish-decor.jpeg?auto=compress&cs=tinysrgb&w=1920',
+  logoIcon: '☕',
+  phone: '+963 937 296 510',
+  address: 'شارع الجامعة، المدينة',
+  workingHours: 'يومياً: 8 ص - 2 ص',
+  whatsappNumber: '963937296510',
+  currencySymbol: 'ل.س',
+};
+
+const defaultCategories = [
+  { id: 'juices', name: 'عصائر طازجة', icon: '🍹' },
+  { id: 'shisha', name: 'أراكيل', icon: '💨' },
+  { id: 'drinks', name: 'مشروبات', icon: '☕' },
+];
+
+const defaultProducts = [
+  { id: 1, name: 'عصير برتقال طازج', desc: 'عصير برتقال طبيعي 100%', price: 5000, img: 'https://images.pexels.com/photos/7594561/pexels-photo-7594561.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 2, name: 'عصير مانجو', desc: 'عصير مانجو طازج ومنعش', price: 6000, img: 'https://images.pexels.com/photos/4955264/pexels-photo-4955264.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 3, name: 'عصير فراولة', desc: 'عصير فراولة طازج', price: 6000, img: 'https://images.pexels.com/photos/2479242/pexels-photo-2479242.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 4, name: 'عصير ليمون ونعناع', desc: 'عصير ليمون منعش', price: 4000, img: 'https://images.pexels.com/photos/7594561/pexels-photo-7594561.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 5, name: 'عصير أفوكادو', desc: 'عصير أفوكادو كريمي', price: 7000, img: 'https://images.pexels.com/photos/4955264/pexels-photo-4955264.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 6, name: 'عصير بطيخ', desc: 'عصير بطيخ منعش', price: 5000, img: 'https://images.pexels.com/photos/2479242/pexels-photo-2479242.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'juices' },
+  { id: 7, name: 'أراكيلة تفاح', desc: 'نكهة التفاح الكلاسيكية', price: 10000, img: 'https://images.pexels.com/photos/5923508/pexels-photo-5923508.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 8, name: 'أراكيلة نعناع', desc: 'نكهة النعناع المنعشة', price: 10000, img: 'https://images.pexels.com/photos/8250689/pexels-photo-8250689.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 9, name: 'أراكيلة عنب', desc: 'نكهة العنب الحلوة', price: 10000, img: 'https://images.pexels.com/photos/4411547/pexels-photo-4411547.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 10, name: 'أراكيلة تفاحتين', desc: 'مزيج التفاح الأخضر والأحمر', price: 12000, img: 'https://images.pexels.com/photos/5923508/pexels-photo-5923508.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 11, name: 'أراكيلة ليمون ونعناع', desc: 'مزيج الليمون والنعناع', price: 11000, img: 'https://images.pexels.com/photos/8250689/pexels-photo-8250689.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 12, name: 'أراكيلة مشكل', desc: 'مزيج خاص من عدة نكهات', price: 13000, img: 'https://images.pexels.com/photos/4411547/pexels-photo-4411547.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'shisha' },
+  { id: 13, name: 'قهوة لاتيه', desc: 'قهوة لاتيه مع رسم فني', price: 4000, img: 'https://images.pexels.com/photos/459489/pexels-photo-459489.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+  { id: 14, name: 'قهوة مثلجة', desc: 'قهوة باردة مع حليب', price: 5000, img: 'https://images.pexels.com/photos/4869290/pexels-photo-4869290.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+  { id: 15, name: 'شاي أخضر', desc: 'شاي أخضر طبيعي', price: 3000, img: 'https://images.pexels.com/photos/88614/pexels-photo-88614.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+  { id: 16, name: 'كابتشينو', desc: 'كابتشينو إيطالي أصيل', price: 4000, img: 'https://images.pexels.com/photos/459489/pexels-photo-459489.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+  { id: 17, name: 'موكا', desc: 'قهوة موكا مع الشوكولاتة', price: 5000, img: 'https://images.pexels.com/photos/4869290/pexels-photo-4869290.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+  { id: 18, name: 'شاي مغربي', desc: 'شاي مغربي بالنعناع', price: 3000, img: 'https://images.pexels.com/photos/88614/pexels-photo-88614.jpeg?auto=compress&cs=tinysrgb&w=600', cat: 'drinks' },
+];
+
+// ===== قراءة البيانات من localStorage =====
+function loadData() {
+  let settings = defaultSettings;
+  let categories = defaultCategories;
+  let products = defaultProducts;
+
+  try {
+    const s = localStorage.getItem('coffee-shop-settings');
+    if (s) settings = { ...defaultSettings, ...JSON.parse(s) };
+  } catch (e) {}
+
+  try {
+    const c = localStorage.getItem('coffee-shop-categories');
+    if (c) categories = JSON.parse(c);
+  } catch (e) {}
+
+  try {
+    const p = localStorage.getItem('coffee-shop-products');
+    if (p) products = JSON.parse(p);
+  } catch (e) {}
+
+  return { settings, categories, products };
+}
+
+const { settings, categories, products } = loadData();
+
+// ===== تطبيق الإعدادات على الصفحة =====
+function applySettings() {
+  document.body.style.backgroundColor = settings.bgColor;
+  document.body.style.color = settings.primaryColor;
+
+  document.getElementById('header').style.backgroundColor = settings.primaryColor;
+  document.getElementById('siteName').textContent = settings.siteName;
+  document.getElementById('logoIcon').textContent = settings.logoIcon;
+  document.getElementById('cartBtn').style.backgroundColor = settings.accentColor;
+
+  document.getElementById('heroBg').style.backgroundImage = `url(${settings.heroImage})`;
+  document.getElementById('heroOverlay').style.background = `linear-gradient(135deg, ${settings.primaryColor}d9 0%, ${settings.secondaryColor}c0 100%)`;
+  document.getElementById('welcomeTitle').textContent = settings.welcomeTitle;
+  document.getElementById('welcomeText').textContent = settings.welcomeText;
+  document.getElementById('heroBtn').style.backgroundColor = settings.accentColor;
+
+  document.getElementById('menuTitle').style.color = settings.primaryColor;
+  document.getElementById('menuSubtitle').style.color = settings.secondaryColor;
+
+  document.getElementById('footer').style.backgroundColor = '#2D1B14';
+  document.getElementById('footerIcon').textContent = settings.logoIcon;
+  document.getElementById('footerName').textContent = settings.siteName;
+  document.getElementById('footerAddress').textContent = settings.address;
+  document.getElementById('footerPhone').textContent = settings.phone;
+  document.getElementById('footerHours').textContent = settings.workingHours;
+  document.getElementById('footerBottom').textContent = `© 2025 ${settings.siteName}. جميع الحقوق محفوظة.`;
+
+  document.getElementById('cartHeader').style.backgroundColor = settings.primaryColor;
+  document.getElementById('cartSidebar').style.backgroundColor = settings.bgColor;
+  document.getElementById('cartTotal').style.color = settings.accentColor;
+  document.getElementById('cartTotalLabel').style.color = settings.primaryColor;
+  document.querySelector('.btn-checkout').style.backgroundColor = '#25D366';
+  document.getElementById('modalBox').style.backgroundColor = settings.bgColor;
+  document.getElementById('modalConfirmBtn').style.backgroundColor = settings.accentColor;
+
+  document.querySelectorAll('.filter-btn.active').forEach(b => {
+    b.style.backgroundColor = settings.primaryColor;
+    b.style.color = '#FFECB3';
+  });
+}
+
+// ===== السلة =====
+let cart = [];
+let currentNoteProduct = null;
+
+function addToCart(productId, note = '') {
+  const product = products.find(p => p.id === productId);
+  const existing = cart.find(item => item.id === productId);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...product, qty: 1, note }); }
+  updateCartUI();
+  showToast(`✅ تم إضافة "${product.name}" إلى السلة`);
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  updateCartUI();
+}
+
+function updateQty(productId, delta) {
+  const item = cart.find(i => i.id === productId);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { removeFromCart(productId); return; }
+  updateCartUI();
+}
+
+function updateItemNote(productId, note) {
+  const item = cart.find(i => i.id === productId);
+  if (item) item.note = note;
+}
+
+function clearCart() {
+  cart = [];
+  updateCartUI();
+  showToast('🗑️ تم تفريغ السلة');
+}
+
+function updateCartUI() {
+  const countEl = document.getElementById('cartCount');
+  const itemsEl = document.getElementById('cartItems');
+  const footerEl = document.getElementById('cartFooter');
+  const footerCount = document.getElementById('footerCount');
+  const totalEl = document.getElementById('cartTotal');
+
+  const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+  const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+  countEl.textContent = totalQty;
+  countEl.style.display = totalQty > 0 ? 'flex' : 'none';
+
+  if (cart.length === 0) {
+    itemsEl.innerHTML = `<div class="cart-empty"><div style="font-size:60px; margin-bottom:15px;">🛒</div><p style="font-size:18px; font-weight:700; margin-bottom:5px; color:${settings.primaryColor};">السلة فارغة</p><p style="font-size:14px; color:${settings.secondaryColor};">أضف بعض المنتجات لتظهر هنا</p></div>`;
+    footerEl.style.display = 'none';
+  } else {
+    itemsEl.innerHTML = cart.map(item => `
+      <div class="cart-item">
+        <div class="cart-item-top">
+          <img class="cart-item-img" src="${item.img}" alt="${item.name}">
+          <div class="cart-item-info">
+            <div class="cart-item-name" style="color:${settings.primaryColor}">${item.name}</div>
+            <div class="cart-item-price" style="color:${settings.accentColor}">${item.price.toLocaleString()} ${settings.currencySymbol}</div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${item.id})" style="color:#EF5350">🗑️</button>
+        </div>
+        <div class="cart-item-controls">
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="updateQty(${item.id}, -1)" style="background:#FFF3E0; color:${settings.secondaryColor}">−</button>
+            <span class="qty-val" style="color:${settings.primaryColor}">${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty(${item.id}, 1)" style="background:#FFF3E0; color:${settings.secondaryColor}">+</button>
+          </div>
+          <span class="cart-item-total" style="color:${settings.primaryColor}">${(item.price * item.qty).toLocaleString()} ${settings.currencySymbol}</span>
+        </div>
+        <div class="cart-item-note">
+          📝
+          <input type="text" class="cart-item-note-input" value="${item.note || ''}" placeholder="أضف ملاحظة..." onchange="updateItemNote(${item.id}, this.value)" style="border-color:#FFE0B2; color:${settings.primaryColor}">
+        </div>
+      </div>
+    `).join('');
+    footerEl.style.display = 'block';
+  }
+
+  footerCount.textContent = totalQty;
+  totalEl.textContent = totalPrice.toLocaleString() + ' ' + settings.currencySymbol;
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartSidebar').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartSidebar').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ===== نافذة الملاحظات =====
+function openNoteModal(productId) {
+  currentNoteProduct = products.find(p => p.id === productId);
+  document.getElementById('modalProductName').textContent = currentNoteProduct.name;
+  document.getElementById('modalProductName').style.color = settings.secondaryColor;
+  document.getElementById('noteTextarea').value = '';
+  document.getElementById('noteTextarea').style.borderColor = '#FFE0B2';
+
+  const suggEl = document.getElementById('modalSuggestions');
+  const suggList = getSuggestions(currentNoteProduct.cat);
+  suggEl.innerHTML = suggList.map(s =>
+    `<button class="suggestion-chip" onclick="setNote('${s}')" style="background:#FFF3E0; color:${settings.secondaryColor}">${s}</button>`
+  ).join('');
+
+  document.getElementById('noteModal').classList.add('open');
+}
+
+function getSuggestions(cat) {
+  if (cat === 'juices') return ['سكر قليل', 'بدون سكر', 'ثلج إضافي', 'حجم كبير'];
+  if (cat === 'shisha') return ['فحم طبيعي', 'فحم سريع', 'نكهة إضافية', 'رأس جديد'];
+  return ['سكر قليل', 'حليب إضافي', 'ساخن جداً', 'بارد'];
+}
+
+function closeNoteModal() {
+  document.getElementById('noteModal').classList.remove('open');
+  currentNoteProduct = null;
+}
+
+function setNote(text) {
+  document.getElementById('noteTextarea').value = text;
+}
+
+function confirmAddWithNote() {
+  if (!currentNoteProduct) return;
+  const note = document.getElementById('noteTextarea').value.trim();
+  addToCart(currentNoteProduct.id, note);
+  closeNoteModal();
+}
+
+// ===== إتمام الشراء =====
+function checkout() {
+  if (cart.length === 0) return;
+  let message = '*مرحباً، أريد طلب من ' + settings.siteName + '*\n\n';
+  cart.forEach(item => {
+    message += `• ${item.name} × ${item.qty}`;
+    if (item.note) message += ` _(ملاحظة: ${item.note})_`;
+    message += '\n';
+  });
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  message += `\n*المجموع: ${total.toLocaleString()} ${settings.currencySymbol}*`;
+  const url = `https://api.whatsapp.com/send?phone=${settings.whatsappNumber}&text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
+// ===== عرض المنتجات =====
+function renderProducts(filter = 'all') {
+  const grid = document.getElementById('productsGrid');
+  const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+
+  grid.innerHTML = filtered.map((p, i) => `
+    <div class="product-card" style="animation-delay:${i * 0.05}s">
+      <div class="product-img-wrap">
+        <img class="product-img" src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.pexels.com/photos/7594561/pexels-photo-7594561.jpeg?auto=compress&cs=tinysrgb&w=600'">
+        <div class="product-price-tag" style="background:${settings.accentColor}">${p.price.toLocaleString()} ${settings.currencySymbol}</div>
+      </div>
+      <div class="product-info">
+        <div class="product-name" style="color:${settings.primaryColor}">${p.name}</div>
+        <div class="product-desc" style="color:${settings.secondaryColor}">${p.desc}</div>
+        <div class="product-actions">
+          <button class="btn-add" onclick="addToCart(${p.id})" style="background:${settings.primaryColor}">➕ إضافة</button>
+          <button class="btn-note" onclick="openNoteModal(${p.id})" title="إضافة ملاحظة" style="background:#FFF3E0; color:${settings.secondaryColor}">📝</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFilters() {
+  const container = document.getElementById('filters');
+  container.innerHTML = `
+    <button class="filter-btn active" onclick="filterProducts('all', this)" style="color:#FFECB3; background:${settings.primaryColor}; border-color:transparent">الكل</button>
+    ${categories.map(c => `<button class="filter-btn" onclick="filterProducts('${c.id}', this)" style="color:${settings.secondaryColor}"><span>${c.icon}</span> ${c.name}</button>`).join('')}
+  `;
+}
+
+function filterProducts(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.backgroundColor = 'white';
+    b.style.color = settings.secondaryColor;
+    b.style.borderColor = '#D7CCC8';
+  });
+  btn.classList.add('active');
+  btn.style.backgroundColor = settings.primaryColor;
+  btn.style.color = '#FFECB3';
+  btn.style.borderColor = 'transparent';
+  renderProducts(cat);
+}
+
+// ===== Toast =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.backgroundColor = settings.primaryColor;
+  toast.style.color = '#FFECB3';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== تهيئة =====
+document.addEventListener('DOMContentLoaded', () => {
+  applySettings();
+  renderFilters();
+  renderProducts('all');
+});
+</script>
+</body>
+</html>
